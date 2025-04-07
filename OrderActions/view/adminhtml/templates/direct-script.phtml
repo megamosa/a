@@ -1,0 +1,87 @@
+<?php
+/**
+ * @var \MagoArab\OrderActions\Block\Adminhtml\ActionsInit $block
+ */
+?>
+
+<script type="text/javascript">
+// Use an immediately invoked function expression to avoid global variables
+(function() {
+    // Wait for document to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        var allowedActions = <?= json_encode($block->getAllowedActions()) ?>;
+        var allowedStatuses = <?= json_encode($block->getAllowedStatuses()) ?>;
+        
+        function filterMenuItems() {
+            // Handle parent items like Print Actions and Order Management
+            var parentItems = {
+                'Print Actions': ['Print PDF Orders', 'Print Invoices', 'Print Packing Slips', 
+                                'Print Credit Memos', 'Print All', 'Print Shipping Labels'],
+                'Order Management': ['Cancel', 'Hold', 'Unhold', 'Delete']
+            };
+            
+            // Check all menu items when menu is opened
+            document.addEventListener('click', function(event) {
+                if (event.target.closest('.action-select')) {
+                    setTimeout(function() {
+                        var menuItems = document.querySelectorAll('.action-menu > li');
+                        menuItems.forEach(function(item) {
+                            var actionItem = item.querySelector('> .action-menu-item');
+                            if (actionItem) {
+                                var actionText = actionItem.textContent.trim();
+                                
+                                // Handle Change Order Status specially
+                                if (actionText === 'Change Order Status') {
+                                    var allowed = allowedActions.indexOf(actionText) !== -1;
+                                    if (!allowed) {
+                                        item.style.display = 'none';
+                                    }
+                                }
+                                // Handle parent items
+                                else if (parentItems[actionText]) {
+                                    // Check if any child is allowed
+                                    var hasAllowedChild = false;
+                                    parentItems[actionText].forEach(function(childAction) {
+                                        if (allowedActions.indexOf(childAction) !== -1) {
+                                            hasAllowedChild = true;
+                                        }
+                                    });
+                                    
+                                    if (!hasAllowedChild) {
+                                        item.style.display = 'none';
+                                    } else {
+                                        item.style.display = '';
+                                        // Filter children
+                                        var submenu = item.querySelector('.action-submenu');
+                                        if (submenu) {
+                                            var children = submenu.querySelectorAll('> li');
+                                            children.forEach(function(child) {
+                                                var childAction = child.querySelector('.action-menu-item');
+                                                if (childAction) {
+                                                    var childText = childAction.textContent.trim();
+                                                    if (allowedActions.indexOf(childText) !== -1) {
+                                                        child.style.display = '';
+                                                    } else {
+                                                        child.style.display = 'none';
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                                // Handle regular actions
+                                else if (allowedActions.indexOf(actionText) === -1) {
+                                    item.style.display = 'none';
+                                }
+                            }
+                        });
+                    }, 100);
+                }
+            });
+        }
+        
+        // Set up filtering
+        filterMenuItems();
+    });
+})();
+</script>

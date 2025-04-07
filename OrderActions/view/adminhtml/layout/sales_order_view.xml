@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <head>
+        <script src="MagoArab_OrderActions/js/actions-filter.js"/>
+    </head>
+    <body>
+        <referenceContainer name="before.body.end">
+            <block class="MagoArab\OrderActions\Block\Adminhtml\ActionsInit" 
+                   name="magoarab.actions.init" 
+                   template="MagoArab_OrderActions::actions-init.phtml"/>
+        </referenceContainer>
+    </body>
+</page>

@@ -1,0 +1,119 @@
+<?php
+/**
+ * @var \MagoArab\OrderActions\Block\Adminhtml\Config\Provider $block
+ */
+$allowedStatuses = json_encode($block->getActionProvider()->getAllowedStatuses());
+$allowedActions = json_encode($block->getActionProvider()->getAllowedActions());
+?>
+
+<script type="text/javascript">
+    // Direct JavaScript that doesn't depend on RequireJS
+    (function() {
+        // Store allowed values
+        var allowedStatuses = <?= /* @noEscape */ $allowedStatuses ?>;
+        var allowedActions = <?= /* @noEscape */ $allowedActions ?>;
+        
+        // Function to filter menu items
+        function filterMenuItems() {
+            // Get all action submenu items (statuses)
+            var statusItems = document.querySelectorAll('.action-submenu > li');
+            for (var i = 0; i < statusItems.length; i++) {
+                var item = statusItems[i];
+                var label = item.querySelector('.action-menu-item');
+                
+                if (label) {
+                    var text = label.textContent.trim();
+                    if (allowedStatuses.indexOf(text) === -1) {
+                        item.style.display = 'none';
+                    } else {
+                        item.style.display = '';
+                    }
+                }
+            }
+            
+            // Get all main action items
+            var actionItems = document.querySelectorAll('.action-menu > li');
+            for (var j = 0; j < actionItems.length; j++) {
+                var actionItem = actionItems[j];
+                var actionLabel = actionItem.querySelector('> .action-menu-item');
+                
+                if (actionLabel) {
+                    var actionText = actionLabel.textContent.trim();
+                    
+                    // Special handling for "Change Order Status"
+                    if (actionText === 'Change Order Status') {
+                        var submenu = actionItem.querySelector('.action-submenu');
+                        if (submenu) {
+                            var visibleStatusItems = 0;
+                            var totalStatusItems = submenu.querySelectorAll('li').length;
+                            var hiddenStatusItems = submenu.querySelectorAll('li[style="display: none;"]').length;
+                            
+                            if (totalStatusItems > 0 && hiddenStatusItems === totalStatusItems) {
+                                actionItem.style.display = 'none';
+                            } else {
+                                actionItem.style.display = '';
+                            }
+                        }
+                    } 
+                    // Other main actions
+                    else if (allowedActions.indexOf(actionText) === -1) {
+                        actionItem.style.display = 'none';
+                    } else {
+                        actionItem.style.display = '';
+                    }
+                }
+            }
+        }
+        
+        // Function to observe DOM changes
+        function observeDomChanges() {
+            // Check if MutationObserver is supported
+            if (typeof MutationObserver !== 'undefined') {
+                var observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        // If nodes were added
+                        if (mutation.addedNodes && mutation.addedNodes.length) {
+                            setTimeout(filterMenuItems, 100);
+                        }
+                    });
+                });
+                
+                // Start observing
+                observer.observe(document.body, {
+                    childList: true,
+                    subtree: true
+                });
+            }
+            
+            // Also set up a fallback interval timer
+            setInterval(filterMenuItems, 1000);
+        }
+        
+        // Function to initialize
+        function initialize() {
+            // Run initially after content is loaded
+            document.addEventListener('DOMContentLoaded', function() {
+                setTimeout(filterMenuItems, 500);
+                observeDomChanges();
+            });
+            
+            // Run when dropdowns are clicked
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('action-select') ||
+                    (event.target.parentNode && event.target.parentNode.classList.contains('action-select'))) {
+                    setTimeout(filterMenuItems, 100);
+                }
+            });
+            
+            // Try to handle AJAX updates
+            if (typeof jQuery !== 'undefined') {
+                jQuery(document).ajaxComplete(function() {
+                    setTimeout(filterMenuItems, 500);
+                });
+            }
+        }
+        
+        // Run initialization
+        initialize();
+    })();
+</script>

@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Original plugins -->
+    <type name="Magento\Sales\Block\Adminhtml\Order\View\Tab\Info">
+        <plugin name="magoarab_order_actions_info_plugin" type="MagoArab\OrderActions\Plugin\Sales\Order\ActionPlugin" sortOrder="10" />
+    </type>
+    
+    <type name="Magento\Sales\Block\Adminhtml\Order\Grid">
+        <plugin name="magoarab_order_grid_actions_plugin" type="MagoArab\OrderActions\Plugin\Sales\Order\ActionPlugin" sortOrder="10" />
+    </type>
+    
+    <!-- UI Component MassAction plugin -->
+    <type name="Magento\Ui\Component\MassAction">
+        <plugin name="magoarab_ui_massaction_plugin" type="MagoArab\OrderActions\Plugin\Ui\MassActionPlugin" sortOrder="20" />
+    </type>
+    
+    <!-- New plugin for UI MassAction component -->
+    <type name="Magento\Ui\Component\MassAction">
+        <plugin name="magoarab_sales_ui_massaction_plugin" type="MagoArab\OrderActions\Plugin\Sales\Ui\Component\MassAction" sortOrder="30" />
+    </type>
+</config>

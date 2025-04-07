@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
+    <event name="controller_action_layout_render_before_sales_order_index">
+        <observer name="magoarab_order_actions_add_js_grid" instance="MagoArab\OrderActions\Observer\AddJsToAdminHtml" />
+    </event>
+    <event name="controller_action_layout_render_before_sales_order_view">
+        <observer name="magoarab_order_actions_add_js_view" instance="MagoArab\OrderActions\Observer\AddJsToAdminHtml" />
+    </event>
+</config>

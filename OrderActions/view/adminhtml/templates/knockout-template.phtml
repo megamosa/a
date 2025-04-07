@@ -1,0 +1,65 @@
+<?php
+/**
+ * @var \MagoArab\OrderActions\Block\Adminhtml\Config\Provider $block
+ */
+$allowedStatuses = $block->getActionProvider()->getAllowedStatuses();
+$allowedActions = $block->getActionProvider()->getAllowedActions();
+?>
+<script type="text/javascript">
+    require(['jquery', 'ko'], function($, ko) {
+        'use strict';
+        
+        var allowedStatuses = <?= json_encode($allowedStatuses) ?>;
+        var allowedActions = <?= json_encode($allowedActions) ?>;
+        
+        // Create a computed observable filter
+        ko.computed(function() {
+            // Find all the data-bind attributes that include action-menu and action-submenu
+            $('ul.action-menu[data-bind*="foreach"], ul.action-submenu[data-bind*="foreach"]').each(function() {
+                var $menu = $(this);
+                var isSubmenu = $menu.hasClass('action-submenu');
+                
+                // Apply to list items
+                $menu.find('> li').each(function() {
+                    var $item = $(this);
+                    var $label = $item.find('> .action-menu-item');
+                    
+                    if ($label.length) {
+                        var label = $label.text().trim();
+                        
+                        if (isSubmenu) {
+                            // Status submenu
+                            if (allowedStatuses.indexOf(label) === -1) {
+                                $item.hide();
+                            } else {
+                                $item.show();
+                            }
+                        } else {
+                            // Main menu
+                            if (label === 'Change Order Status') {
+                                // Count visible submenu items
+                                var $submenu = $item.find('.action-submenu');
+                                var visibleItems = $submenu.find('> li:visible').length;
+                                
+                                if (visibleItems === 0) {
+                                    $item.hide();
+                                } else {
+                                    $item.show();
+                                }
+                            } else if (allowedActions.indexOf(label) === -1) {
+                                $item.hide();
+                            } else {
+                                $item.show();
+                            }
+                        }
+                    }
+                });
+            });
+        });
+        
+        // Run every 1 second to catch dynamic updates
+        setInterval(function() {
+            ko.tasks.runEarly();
+        }, 1000);
+    });
+</script>

@@ -1,0 +1,16 @@
+<?php
+/**
+ * @var \MagoArab\OrderActions\Block\Adminhtml\ActionsInit $block
+ */
+?>
+<script type="text/javascript">
+    require([
+        'MagoArab_OrderActions/js/actions-filter'
+    ], function(actionsFilter) {
+        // Initialize with allowed actions and statuses
+        actionsFilter.init(
+            <?= json_encode($block->getAllowedActions()) ?>,
+            <?= json_encode($block->getAllowedStatuses()) ?>
+        );
+    });
+</script>
